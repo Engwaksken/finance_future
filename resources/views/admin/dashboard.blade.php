@@ -220,14 +220,11 @@
         </div>
 
 
-        <a href="{{ route('admin.articles.create') }}"
-           class="btn btn-primary">
-
-            <i class="fa-solid fa-plus"></i>
-
-            New Article
-
-        </a>
+      <a href="{{ route('admin.articles.index') }}"
+   class="btn btn-primary">
+    <i class="fa-solid fa-newspaper"></i>
+    Manage Articles
+</a>
 
     </div>
 
