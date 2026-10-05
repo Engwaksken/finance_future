@@ -1,4 +1,5 @@
 import './bootstrap';
+import './password-toggle';
 
 import Alpine from 'alpinejs';
 

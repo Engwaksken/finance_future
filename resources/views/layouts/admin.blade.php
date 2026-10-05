@@ -53,6 +53,7 @@
 
         <nav class="sidebar-menu">
 
+            @if(auth()->user()->hasPermission('dashboard.view'))
             <a href="{{ route('admin.dashboard') }}"
                class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
@@ -64,6 +65,7 @@
 
             </a>
 
+            @endif
         </nav>
 
 
@@ -74,6 +76,7 @@
 
         <nav class="sidebar-menu">
 
+            @if(auth()->user()->hasPermission('articles.manage'))
             <a href="{{ route('admin.articles.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
 
@@ -86,6 +89,8 @@
             </a>
 
 
+            @endif
+            @if(auth()->user()->hasPermission('categories.manage'))
             <a href="{{ route('admin.categories.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
 
@@ -97,6 +102,7 @@
 
             </a>
 
+            @endif
         </nav>
 
 
@@ -107,6 +113,7 @@
 
         <nav class="sidebar-menu">
 
+            @if(auth()->user()->hasPermission('users.manage'))
             <a href="{{ route('admin.users.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
 
@@ -119,6 +126,8 @@
             </a>
 
 
+            @endif
+            @if(auth()->user()->hasPermission('roles.manage'))
             <a href="{{ route('admin.roles.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
 
@@ -130,6 +139,7 @@
 
             </a>
 
+            @endif
         </nav>
 
 
@@ -140,6 +150,7 @@
 
         <nav class="sidebar-menu">
 
+            @if(auth()->user()->hasPermission('settings.manage'))
             <a href="{{ route('admin.settings.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
 
@@ -151,6 +162,7 @@
 
             </a>
 
+            @endif
         </nav>
 
 

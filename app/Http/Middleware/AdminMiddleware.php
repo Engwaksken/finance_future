@@ -12,7 +12,7 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        if (!$user || !in_array($user->role, ['super_admin', 'admin', 'editor'], true)) {
+        if (!$user || !$user->isAdmin()) {
             abort(403, 'You do not have permission to perform this action.');
         }
 

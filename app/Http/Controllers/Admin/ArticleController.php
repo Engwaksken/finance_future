@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Services\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -72,7 +73,7 @@ class ArticleController extends Controller
             $data['featured_image'] = $request->file('featured_image_file')->store('articles', 'public');
         }
 
-        if ($data['status'] === 'published' && !$article->published_at) {
+        if ($data['status'] === 'published' && ! $article->published_at) {
             $data['published_at'] = now();
         }
 
@@ -91,12 +92,16 @@ class ArticleController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'category_id' => ['nullable', 'exists:categories,id'],
             'title' => ['required', 'string', 'max:255'],
             'excerpt' => ['nullable', 'string', 'max:500'],
-            'body' => ['required', 'string'],
-            'featured_image_file' => ['nullable', 'image', 'max:5120'],
+            'body' => ['required', 'string', function ($attribute, $value, $fail) {
+                if (is_string($value) && strlen($value) > HtmlSanitizer::MAX_INPUT_LENGTH) {
+                    $fail('The body must not exceed 1,000,000 bytes.');
+                }
+            }],
+            'featured_image_file' => ['nullable', 'mimes:jpeg,png,webp,gif', 'max:5120'],
             'status' => ['required', 'in:draft,review,scheduled,published,archived'],
             'is_featured' => ['nullable', 'boolean'],
             'is_trending' => ['nullable', 'boolean'],
@@ -110,6 +115,15 @@ class ArticleController extends Controller
             'is_featured' => $request->boolean('is_featured'),
             'is_trending' => $request->boolean('is_trending'),
         ];
+
+        $data['body'] = $this->sanitizeBody($data['body']);
+
+        return $data;
+    }
+
+    private function sanitizeBody(string $body): string
+    {
+        return HtmlSanitizer::clean($body);
     }
 
     private function uniqueSlug(string $title): string

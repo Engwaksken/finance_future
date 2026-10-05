@@ -64,12 +64,12 @@ class RolesPermissionsSeeder extends Seeder
             'dashboard.view', 'articles.manage',
         ])->pluck('id'));
 
-        $first = User::first();
-        if ($first) {
-            $first->roles()->syncWithoutDetaching([$super->id]);
-            $first->role = 'super_admin';
-            $first->status = 'active';
-            $first->save();
-        }
+        User::each(function (User $user) {
+            $role = Role::where('slug', $user->role)->first();
+
+            if ($role) {
+                $user->roles()->syncWithoutDetaching([$role->id]);
+            }
+        });
     }
 }

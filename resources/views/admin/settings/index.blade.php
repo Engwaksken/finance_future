@@ -23,7 +23,9 @@
         <div class="field"><label>Backup retention (days)</label><input type="number" min="1" max="365" name="backup_retention_days" value="{{ old('backup_retention_days',$settings['backup_retention_days'] ?? 14) }}"></div>
         <div class="field"><label class="checkbox-label"><input type="checkbox" name="backup_enabled" value="1" @checked(($settings['backup_enabled'] ?? '0') === '1')> Enable automatic daily backup</label></div>
     </div>
+    @if(auth()->user()->hasPermission('backups.manage'))
     <a class="btn btn-light" href="{{ route('admin.settings.backup') }}"><i class="fa-solid fa-download"></i> Download Database Backup</a>
+    @endif
 </div>
 
 <div class="panel-header"><h2 class="panel-title">Maintenance Options</h2></div>

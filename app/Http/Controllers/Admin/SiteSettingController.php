@@ -23,8 +23,8 @@ class SiteSettingController extends Controller
             'site_name' => ['required', 'string', 'max:150'],
             'site_tagline' => ['nullable', 'string', 'max:255'],
             'site_email' => ['nullable', 'email', 'max:255'],
-            'site_logo' => ['nullable', 'image', 'max:4096'],
-            'site_favicon' => ['nullable', 'image', 'max:1024'],
+            'site_logo' => ['nullable', 'mimes:jpeg,png,webp,gif', 'max:4096'],
+            'site_favicon' => ['nullable', 'mimes:jpeg,png,webp,gif,ico', 'max:1024'],
             'backup_enabled' => ['nullable', 'boolean'],
             'backup_retention_days' => ['required', 'integer', 'min:1', 'max:365'],
             'maintenance_enabled' => ['nullable', 'boolean'],
@@ -58,6 +58,6 @@ class SiteSettingController extends Controller
         $path = $backup->create();
         $backup->prune((int) SiteSetting::valueOf('backup_retention_days', 14));
 
-        return response()->download($path)->deleteFileAfterSend(false);
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 }

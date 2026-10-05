@@ -10,48 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    @vite(['resources/css/frontend.css'])
+    @vite(['resources/css/frontend.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 <body>
-<div class="topbar">
-    <div class="container inner">
-        <div><a href="{{ route('articles.index') }}">Latest</a><a href="{{ route('about') }}">About Mark</a><a href="#">Contact</a></div>
-        <div><a href="#"><i class="fa-brands fa-linkedin-in"></i></a><a href="#"><i class="fa-brands fa-youtube"></i></a></div>
-    </div>
-</div>
-
-<header class="brand-row">
-    <div class="container inner">
-        <a class="brand" href="{{ route('home') }}">
-            <strong>Finance & Future Technology</strong>
-            <span>with Mark Mpirirwe</span>
-        </a>
-        <div class="header-actions">
-            <a class="btn" href="{{ route('articles.index') }}"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
-            <a class="btn btn-primary" href="#newsletter"><i class="fa-regular fa-envelope"></i> Subscribe</a>
-            @auth
-                <a class="btn login" href="{{ route('admin.dashboard') }}">Dashboard</a>
-            @else
-                <a class="btn login" href="{{ route('login') }}">Sign In</a>
-            @endauth
-        </div>
-    </div>
-</header>
-
-@php
-    $navCategories = \App\Models\Category::where('is_active', true)->where('slug', '!=', 'events')->orderBy('sort_order')->get();
-@endphp
-<nav class="nav">
-    <div class="container inner">
-        <a href="{{ route('home') }}">Home</a>
-        @foreach($navCategories as $navCategory)
-            <a href="{{ route('categories.show', $navCategory->slug) }}">{{ $navCategory->name }}</a>
-        @endforeach
-        <a href="{{ route('events.index') }}">Events</a>
-        <a href="{{ route('about') }}">About</a>
-    </div>
-</nav>
+@include('partials.site-header')
 
 @if(isset($trending) && $trending->count())
 <div class="trending">
@@ -70,16 +33,6 @@
 
 <main>@yield('content')</main>
 
-<footer>
-    <div class="container footer-grid">
-        <div>
-            <h4>Finance & Future Technology</h4>
-            <p>Exploring where money meets innovation with Mark Mpirirwe.</p>
-        </div>
-        <div><h4>Topics</h4><p>Finance<br>FinTech<br>Future Tech<br>Policy</p></div>
-        <div><h4>Media</h4><p>Interviews<br>Podcasts<br>Videos<br>Events</p></div>
-        <div><h4>Platform</h4><p>About<br>Newsletter<br>Contact<br>Privacy</p></div>
-    </div>
-</footer>
+@include('partials.site-footer')
 </body>
 </html>

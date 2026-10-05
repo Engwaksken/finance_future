@@ -53,14 +53,23 @@ class User extends Authenticatable
             return true;
         }
 
-        return $this->roles()
+        return Role::query()
+            ->where(fn ($query) => $query->where('slug', $this->role)
+                ->orWhereHas('users', fn ($users) => $users->whereKey($this->id)))
             ->whereHas('permissions', fn ($q) => $q->where('slug', $slug))
             ->exists();
     }
 
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['super_admin', 'admin', 'editor'], true)
-            || $this->roles()->whereIn('slug', ['super_admin', 'admin', 'editor'])->exists();
+        if ($this->status !== 'active') {
+            return false;
+        }
+
+        return $this->hasRole('super_admin') || Role::query()
+            ->where(fn ($query) => $query->where('slug', $this->role)
+                ->orWhereHas('users', fn ($users) => $users->whereKey($this->id)))
+            ->whereHas('permissions')
+            ->exists();
     }
 }
