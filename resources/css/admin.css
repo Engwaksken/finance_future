@@ -73,3 +73,154 @@ a,a:hover,a:focus,a:active{text-decoration:none!important}
         grid-template-columns: 1fr;
     }
 }
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-success {
+    background: #edf9f2;
+    color: #12653c;
+}
+
+.badge-info {
+    background: #e9f3fb;
+    color: #1a5c8a;
+}
+
+.badge-warning {
+    background: #fdf4e4;
+    color: #9a6a1a;
+}
+
+.badge-grey {
+    background: #f0f2f5;
+    color: #475467;
+}
+
+.badge-danger {
+    background: #fff1f1;
+    color: #8d2424;
+}
+
+.table-title {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.modal-sm {
+    width: min(420px, 100%);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filters input {
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+
+.filters select {
+    flex: 0 1 200px;
+}
+
+.checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 600;
+    color: #344054;
+    cursor: pointer;
+}
+
+.checkbox-label input,
+.checkbox-row input {
+    width: auto;
+    margin: 0;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.border-navy {
+    border-left-color: #0b3b60 !important;
+}
+
+.border-grey {
+    border-left-color: #667085 !important;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.page-item {
+    list-style: none;
+}
+
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 7px;
+    background: #fff;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    color: #98a2b3;
+    pointer-events: none;
+}
+
+.page-link:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}

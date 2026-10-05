@@ -32,7 +32,7 @@
 </tbody>
 </table>
 </div>
-@if($users->hasPages())<div class="panel-body">{{ $users->links() }}</div>@endif
+@if($users->hasPages())<div class="panel-body">{{ $users->links('pagination::bootstrap-4') }}</div>@endif
 </div>
 
 <div class="modal-backdrop-custom" id="addUser"><div class="modal-box"><form method="POST" action="{{ route('admin.users.store') }}">@csrf

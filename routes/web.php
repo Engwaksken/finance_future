@@ -26,7 +26,7 @@ Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('articles', AdminArticleController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('articles', AdminArticleController::class)->only(['index', 'edit', 'store', 'update', 'destroy']);
     Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('users', AdminUserController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('roles', AdminRoleController::class)->only(['index', 'store', 'update', 'destroy']);

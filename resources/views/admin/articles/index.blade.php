@@ -78,7 +78,7 @@
         </table>
     </div>
 
-    @if($articles->hasPages())<div class="panel-body">{{ $articles->links() }}</div>@endif
+    @if($articles->hasPages())<div class="panel-body">{{ $articles->links('pagination::bootstrap-4') }}</div>@endif
 </div>
 
 <div class="modal-backdrop-custom" id="addArticleModal">

@@ -17,7 +17,7 @@
             <p>No published articles in this topic yet.</p>
         @endforelse
     </div>
-    <div style="margin-top:28px">{{ $articles->links() }}</div>
+    <div style="margin-top:28px">{{ $articles->links('pagination::bootstrap-4') }}</div>
 </div>
 </section>
 @endsection

@@ -5,9 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
+                    <a href="{{ route('dashboard') }}" class="font-semibold text-gray-800 text-lg">{{ config('app.name', 'Finance & Future Technology') }}</a>
                 </div>
 
                 <!-- Navigation Links -->

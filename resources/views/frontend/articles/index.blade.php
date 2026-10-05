@@ -16,7 +16,7 @@
             </article>
         @endforeach
     </div>
-    <div style="margin-top:28px">{{ $articles->links() }}</div>
+    <div style="margin-top:28px">{{ $articles->links('pagination::bootstrap-4') }}</div>
 </div>
 </section>
 @endsection

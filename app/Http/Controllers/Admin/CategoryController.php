@@ -26,7 +26,7 @@ class CategoryController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $data['slug'] = Str::slug($data['name']);
+        $data['slug'] = $this->uniqueSlug($data['name']);
         $data['is_featured'] = $request->boolean('is_featured');
         $data['is_active'] = $request->boolean('is_active', true);
 
@@ -45,7 +45,7 @@ class CategoryController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $data['slug'] = Str::slug($data['name']);
+        $data['slug'] = $this->uniqueSlug($data['name'], $category->id);
         $data['is_featured'] = $request->boolean('is_featured');
         $data['is_active'] = $request->boolean('is_active');
 
@@ -62,5 +62,19 @@ class CategoryController extends Controller
 
         $category->delete();
         return back()->with('success', 'Category deleted.');
+    }
+
+    private function uniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($name);
+        $slug = $base;
+        $i = 2;
+
+        while (Category::where('slug', $slug)->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))->exists()) {
+            $slug = "{$base}-{$i}";
+            $i++;
+        }
+
+        return $slug;
     }
 }

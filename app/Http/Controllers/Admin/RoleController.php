@@ -25,7 +25,7 @@ class RoleController extends Controller
 
         $role = Role::create([
             'name' => $data['name'],
-            'slug' => Str::slug($data['name'], '_'),
+            'slug' => $this->uniqueSlug($data['name']),
             'description' => $data['description'] ?? null,
         ]);
 
@@ -40,7 +40,7 @@ class RoleController extends Controller
 
         $role->update([
             'name' => $data['name'],
-            'slug' => $role->is_system ? $role->slug : Str::slug($data['name'], '_'),
+            'slug' => $role->is_system ? $role->slug : $this->uniqueSlug($data['name'], $role->id),
             'description' => $data['description'] ?? null,
         ]);
 
@@ -70,5 +70,19 @@ class RoleController extends Controller
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['integer', 'exists:permissions,id'],
         ]);
+    }
+
+    private function uniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = Str::slug($name, '_');
+        $slug = $base;
+        $i = 2;
+
+        while (Role::where('slug', $slug)->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))->exists()) {
+            $slug = "{$base}_{$i}";
+            $i++;
+        }
+
+        return $slug;
     }
 }

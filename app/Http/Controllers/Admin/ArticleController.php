@@ -30,6 +30,14 @@ class ArticleController extends Controller
         return view('admin.articles.index', compact('articles', 'categories', 'tags'));
     }
 
+    public function edit(Article $article)
+    {
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $tags = Tag::orderBy('name')->get();
+
+        return view('admin.articles.form', compact('article', 'categories', 'tags'));
+    }
+
     public function store(Request $request)
     {
         $data = $this->validated($request);
@@ -46,7 +54,7 @@ class ArticleController extends Controller
         }
 
         $article = Article::create($data);
-        $article->tags()->sync($request->input('tags', []));
+        $article->tags()->sync($data['tags'] ?? []);
 
         return back()->with('success', 'Article created.');
     }
@@ -69,7 +77,7 @@ class ArticleController extends Controller
         }
 
         $article->update($data);
-        $article->tags()->sync($request->input('tags', []));
+        $article->tags()->sync($data['tags'] ?? []);
 
         return back()->with('success', 'Article updated.');
     }
@@ -96,6 +104,8 @@ class ArticleController extends Controller
             'scheduled_for' => ['nullable', 'date'],
             'seo_title' => ['nullable', 'string', 'max:255'],
             'seo_description' => ['nullable', 'string', 'max:320'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['integer', 'exists:tags,id'],
         ]) + [
             'is_featured' => $request->boolean('is_featured'),
             'is_trending' => $request->boolean('is_trending'),
