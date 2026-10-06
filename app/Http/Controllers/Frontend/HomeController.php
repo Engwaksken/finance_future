@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\PageSlide;
 
 class HomeController extends Controller
 {
     public function index()
     {
+        $hasPageSlides = PageSlide::where('page', 'home')->where('is_active', true)->whereNull('category_id')->exists();
         $featured = Article::published()->with(['author', 'category'])
             ->where('is_featured', true)
             ->latest('published_at')
@@ -41,7 +43,7 @@ class HomeController extends Controller
             ->get();
 
         return view('frontend.home', compact(
-            'featured', 'latest', 'categories', 'trending', 'events'
+            'featured', 'latest', 'categories', 'trending', 'events', 'hasPageSlides'
         ));
     }
 }

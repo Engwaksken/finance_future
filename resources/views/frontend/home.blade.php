@@ -3,6 +3,7 @@
 @section('title','Finance & Future Technology with Mark Mpirirwe')
 
 @section('content')
+@unless($hasPageSlides)
 <section class="hero">
     <div class="container hero-grid">
         @if($featured)
@@ -30,6 +31,7 @@
         </aside>
     </div>
 </section>
+@endunless
 
 <section class="section">
     <div class="container">
@@ -65,7 +67,7 @@
             @foreach($categories->take(8) as $category)
                 <a class="card" href="{{ route('categories.show',$category->slug) }}">
                     <div class="card-body">
-                        <div class="eyebrow">{{ str_pad($loop->iteration,2,'0',STR_PAD_LEFT) }}</div>
+                        <x-category-visual :category="$category" :fallback="$loop->iteration" />
                         <h3>{{ $category->name }}</h3>
                         <p>{{ $category->description }}</p>
                     </div>

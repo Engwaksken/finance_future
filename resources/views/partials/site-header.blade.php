@@ -12,8 +12,9 @@
 <header class="brand-row">
     <div class="container inner">
         <a class="brand" href="{{ route('home') }}">
-            <strong>Finance &amp; Future Technology</strong>
-            <span>with Mark Mpirirwe</span>
+            @if($logo = \App\Models\SiteSetting::valueOf('site_logo'))<img class="site-logo" src="{{ asset('storage/'.$logo) }}" alt="{{ \App\Models\SiteSetting::valueOf('site_name', 'Finance & Future Technology') }}">@endif
+            <strong>{{ \App\Models\SiteSetting::valueOf('site_name', 'Finance & Future Technology') }}</strong>
+            <span>{{ \App\Models\SiteSetting::valueOf('site_tagline', 'with Mark Mpirirwe') }}</span>
         </a>
 
         <div class="header-actions">

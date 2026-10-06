@@ -19,6 +19,8 @@ class RolesPermissionsSeeder extends Seeder
             'roles.manage' => ['Manage Roles & Permissions', 'security'],
             'settings.manage' => ['Manage Site Settings', 'settings'],
             'backups.manage' => ['Manage Backups', 'settings'],
+            'audit.view' => ['View Audit Logs', 'security'],
+            'subscribers.view' => ['View Subscribers', 'content'],
         ];
 
         foreach ($items as $slug => [$name, $group]) {
@@ -54,6 +56,7 @@ class RolesPermissionsSeeder extends Seeder
         $admin->permissions()->sync(Permission::whereIn('slug', [
             'dashboard.view', 'articles.manage', 'categories.manage',
             'users.manage', 'roles.manage', 'settings.manage', 'backups.manage',
+            'audit.view', 'subscribers.view',
         ])->pluck('id'));
 
         $editor->permissions()->sync(Permission::whereIn('slug', [

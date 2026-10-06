@@ -1,4 +1,23 @@
 :root{--ink:#101820;--muted:#667085;--line:#e7e9ec;--soft:#f7f8fa;--brand:#0b3b60;--accent:#b99146;--white:#fff}
+.category-visual{display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--accent);font-weight:800}
+.site-logo{display:block;max-width:240px;max-height:70px;object-fit:contain;margin-bottom:8px}
+.category-icon{width:64px;height:64px;font-size:32px;background:var(--soft);border-radius:12px}
+.category-number{font-size:25px;min-height:40px}
+.category-image{display:block;width:100%;max-width:360px;height:155px;object-fit:cover;border-radius:10px}
+.page-slider{position:relative;background:var(--brand)}
+.page-slide{position:relative;isolation:isolate;min-height:450px;display:flex;align-items:center;padding:65px 0 100px}
+.page-slide[hidden],.page-slider-controls[hidden]{display:none}
+.page-slide-background,.page-slide-overlay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.page-slide-overlay{background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(0,0,0,.2));z-index:-1}
+.page-slide-content h2{font:800 clamp(30px,5vw,58px)/1.12 Manrope,sans-serif;max-width:900px;margin:0 0 20px;overflow-wrap:anywhere}
+.page-slide-content p{font-size:18px;line-height:1.7;max-width:760px;white-space:pre-line}
+.slide-button{margin-top:12px;color:inherit;border-color:currentColor;background:transparent}
+.page-slider-controls{position:absolute;bottom:24px;left:4%;right:4%;display:flex;align-items:center;gap:14px;color:#fff}
+.page-slider-controls button{border:1px solid #ffffff80;color:#fff;background:#081f32cc;border-radius:8px;padding:10px 13px;cursor:pointer;font:inherit;font-size:13px}
+.page-slider-dots{display:flex;gap:8px;flex-wrap:wrap}
+.page-slider-dots button{width:12px;height:12px;padding:0;border-radius:50%;background:#ffffff60;border-color:#fff}
+.page-slider-dots button[aria-pressed=true]{background:#fff}
+@media(max-width:560px){.page-slide{min-height:380px;padding:40px 0 105px}.page-slide-content p{font-size:16px}.page-slider-controls{gap:9px}.page-slider-controls button{padding:8px 10px}.page-slider-dots button{padding:0}}
 *{box-sizing:border-box}
 body{margin:0;color:var(--ink);font-family:"DM Sans",sans-serif;background:#fff}
 a{color:inherit;text-decoration:none}

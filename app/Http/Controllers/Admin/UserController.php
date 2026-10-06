@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
+use App\Support\AdminPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -13,20 +14,33 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('roles')
-            ->when($request->filled('q'), function ($q) use ($request) {
-                $term = trim((string) $request->q);
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:200'],
+            'status' => ['nullable', 'in:active,inactive'],
+        ]);
+        $period = AdminPeriod::fromRequest($request);
+        $query = $period->apply(User::query())
+            ->when($request->filled('q'), function ($q) use ($filters) {
+                $term = trim($filters['q']);
                 $q->where(fn ($x) => $x
                     ->where('name', 'like', "%{$term}%")
                     ->orWhere('email', 'like', "%{$term}%"));
             })
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $filters['status']));
+        $stats = [
+            'Total Users' => (clone $query)->count(),
+            'Active Users' => (clone $query)->where('status', 'active')->count(),
+            'Inactive Users' => (clone $query)->where('status', 'inactive')->count(),
+            'Verified Emails' => (clone $query)->whereNotNull('email_verified_at')->count(),
+        ];
+        $users = $query->with('roles')
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
         $roles = Role::orderBy('name')->get();
 
-        return view('admin.users.index', compact('users', 'roles'));
+        return view('admin.users.index', compact('users', 'roles', 'stats', 'period'));
     }
 
     public function store(Request $request)
@@ -49,6 +63,7 @@ class UserController extends Controller
         ]);
 
         $user->roles()->sync($data['roles'] ?? []);
+        $request->attributes->set('audit_subject', $user);
 
         return back()->with('success', 'User created.');
     }
@@ -70,7 +85,7 @@ class UserController extends Controller
             'status' => $data['status'],
         ]);
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $user->password = Hash::make($data['password']);
         }
 

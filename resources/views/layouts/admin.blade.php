@@ -113,6 +113,10 @@
 
         <nav class="sidebar-menu">
 
+            @if(auth()->user()->hasPermission('subscribers.view'))
+            <a href="{{ route('admin.subscribers.index') }}" class="sidebar-link {{ request()->routeIs('admin.subscribers.*') ? 'active' : '' }}"><i class="fa-solid fa-envelope-open-text"></i><span>Subscribers</span></a>
+            @endif
+
             @if(auth()->user()->hasPermission('users.manage'))
             <a href="{{ route('admin.users.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
@@ -149,6 +153,10 @@
         </div>
 
         <nav class="sidebar-menu">
+
+            @if(auth()->user()->hasPermission('audit.view'))
+            <a href="{{ route('admin.audit-logs.index') }}" class="sidebar-link {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}"><i class="fa-solid fa-clock-rotate-left"></i><span>Audit Logs</span></a>
+            @endif
 
             @if(auth()->user()->hasPermission('settings.manage'))
             <a href="{{ route('admin.settings.index') }}"
@@ -289,6 +297,10 @@
 
 
             @yield('content')
+
+            @if($errors->any() && old('_form'))
+                <span data-reopen-modal="{{ old('_form') }}" hidden></span>
+            @endif
 
         </main>
 

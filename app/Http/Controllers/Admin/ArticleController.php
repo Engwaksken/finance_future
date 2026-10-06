@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Services\HtmlSanitizer;
+use App\Support\AdminPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,12 +16,24 @@ class ArticleController extends Controller
 {
     public function index(Request $request)
     {
-        $articles = Article::with(['author', 'category', 'tags'])
-            ->when($request->filled('q'), function ($q) use ($request) {
-                $term = trim((string) $request->q);
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:200'],
+            'status' => ['nullable', 'in:draft,review,scheduled,published,archived'],
+        ]);
+        $period = AdminPeriod::fromRequest($request);
+        $query = $period->apply(Article::query())
+            ->when($request->filled('q'), function ($q) use ($filters) {
+                $term = trim($filters['q']);
                 $q->where('title', 'like', "%{$term}%");
             })
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $filters['status']));
+        $stats = [
+            'Total Articles' => (clone $query)->count(),
+            'Published' => (clone $query)->where('status', 'published')->count(),
+            'Drafts' => (clone $query)->where('status', 'draft')->count(),
+            'Total Views' => (clone $query)->sum('views_count'),
+        ];
+        $articles = $query->with(['author', 'category', 'tags'])
             ->latest()
             ->paginate(20)
             ->withQueryString();
@@ -28,7 +41,7 @@ class ArticleController extends Controller
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
 
-        return view('admin.articles.index', compact('articles', 'categories', 'tags'));
+        return view('admin.articles.index', compact('articles', 'categories', 'tags', 'stats', 'period'));
     }
 
     public function edit(Article $article)
@@ -56,6 +69,7 @@ class ArticleController extends Controller
 
         $article = Article::create($data);
         $article->tags()->sync($data['tags'] ?? []);
+        $request->attributes->set('audit_subject', $article);
 
         return back()->with('success', 'Article created.');
     }

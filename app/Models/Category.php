@@ -8,6 +8,7 @@ class Category extends Model
 {
     protected $fillable = [
         'name', 'slug', 'description', 'icon', 'sort_order', 'is_featured', 'is_active',
+        'display_type', 'featured_image', 'display_number',
     ];
 
     protected $casts = [

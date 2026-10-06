@@ -3,7 +3,7 @@
 @section('content')
 <section class="section">
 <div class="container">
-    <div class="section-head"><div><div class="eyebrow">Topic</div><h2>{{ $category->name }}</h2><p>{{ $category->description }}</p></div></div>
+    <div class="section-head"><div><x-category-visual :category="$category" /><div class="eyebrow">Topic</div><h2>{{ $category->name }}</h2><p>{{ $category->description }}</p></div></div>
     <div class="grid">
         @forelse($articles as $article)
             <article class="card">

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\SiteSetting;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -50,6 +51,18 @@ class FinanceFutureSeeder extends Seeder
                 ['slug' => Str::slug($name)],
                 ['name' => $name]
             );
+        }
+
+        foreach ([
+            ['site_name', 'Finance Future', 'general'],
+            ['site_tagline', 'Finance, FinTech & Future Technology', 'general'],
+            ['site_email', null, 'general'],
+            ['backup_enabled', '0', 'backup'],
+            ['backup_retention_days', '14', 'backup'],
+            ['maintenance_enabled', '0', 'maintenance'],
+            ['maintenance_message', 'We are currently performing maintenance. Please check back soon.', 'maintenance'],
+        ] as [$key, $value, $group]) {
+            SiteSetting::firstOrCreate(['key' => $key], ['value' => $value, 'group' => $group]);
         }
     }
 }

@@ -30,6 +30,7 @@ class RoleController extends Controller
         ]);
 
         $role->permissions()->sync($data['permissions'] ?? []);
+        $request->attributes->set('audit_subject', $role);
 
         return back()->with('success', 'Role created.');
     }

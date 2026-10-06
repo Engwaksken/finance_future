@@ -1,7 +1,7 @@
 <footer class="site-footer">
     <div class="container footer-grid">
         <div>
-            <h4><a href="{{ route('home') }}">Finance &amp; Future Technology</a></h4>
+            <h4><a href="{{ route('home') }}">{{ \App\Models\SiteSetting::valueOf('site_name', 'Finance & Future Technology') }}</a></h4>
             <p>Exploring where money meets innovation with Mark Mpirirwe.</p>
         </div>
         <div>

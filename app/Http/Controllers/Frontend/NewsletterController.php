@@ -15,15 +15,18 @@ class NewsletterController extends Controller
             'email' => ['required', 'email', 'max:255'],
         ]);
 
-        NewsletterSubscriber::updateOrCreate(
+        $subscriber = NewsletterSubscriber::firstOrCreate(
             ['email' => strtolower($data['email'])],
-            [
-                'name' => $data['name'] ?? null,
-                'status' => 'active',
-                'subscribed_at' => now(),
-                'unsubscribed_at' => null,
-            ]
+            ['name' => $data['name'] ?? null, 'status' => 'active', 'subscribed_at' => now()]
         );
+        if ($subscriber->status !== 'active' || ! $subscriber->subscribed_at) {
+            $subscriber->subscribed_at = now();
+        }
+        $subscriber->fill([
+            'name' => $data['name'] ?? $subscriber->name,
+            'status' => 'active',
+            'unsubscribed_at' => null,
+        ])->save();
 
         return back()->with('success', 'Thank you for subscribing.');
     }

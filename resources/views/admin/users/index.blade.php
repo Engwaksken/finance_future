@@ -3,13 +3,22 @@
 @section('heading','Users')
 
 @section('content')
+<x-admin-stats :stats="$stats" :period="$period" />
 <div class="panel">
 <div class="panel-header"><h2 class="panel-title">System Users</h2><button class="btn btn-primary" data-modal-open="addUser" type="button"><i class="fa-solid fa-user-plus"></i> Add User</button></div>
+<div class="panel-body">
+    <form method="GET" class="admin-filters">
+        <div class="filter-field"><label for="user-search">Search</label><input id="user-search" name="q" value="{{ request('q') }}" placeholder="Name or email" maxlength="200"></div>
+        <div class="filter-field"><label for="user-status">Status</label><select id="user-status" name="status"><option value="">All statuses</option>@foreach(['active', 'inactive'] as $status)<option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>@endforeach</select></div>
+        <x-admin-period-filter :period="$period" />
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Filter</button><a class="btn btn-light" href="{{ route('admin.users.index') }}">Reset</a>
+    </form>
+</div>
 <div class="table-responsive">
 <table>
 <thead><tr><th>Name</th><th>Email</th><th>Roles</th><th>Status</th><th>Actions</th></tr></thead>
 <tbody>
-@foreach($users as $user)
+@forelse($users as $user)
 <tr>
 <td>{{ $user->name }}</td><td>{{ $user->email }}</td>
 <td>{{ $user->roles->pluck('name')->join(', ') ?: ucfirst($user->role ?? 'user') }}</td>
@@ -28,7 +37,9 @@
 <div class="modal-body">Delete <strong>{{ $user->name }}</strong>?</div>
 <div class="modal-footer"><button type="button" class="btn btn-light" data-modal-close>Cancel</button><button class="btn btn-danger">Delete</button></div>
 </form></div></div>
-@endforeach
+@empty
+<tr><td colspan="5" class="empty-state">No users match these filters.</td></tr>
+@endforelse
 </tbody>
 </table>
 </div>

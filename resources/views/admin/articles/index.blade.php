@@ -3,6 +3,7 @@
 @section('heading','Articles')
 
 @section('content')
+<x-admin-stats :stats="$stats" :period="$period" />
 <div class="panel">
     <div class="panel-header">
         <div>
@@ -15,15 +16,17 @@
     </div>
 
     <div class="panel-body">
-        <form method="GET" class="filters">
-            <input name="q" value="{{ request('q') }}" placeholder="Search articles">
-            <select name="status">
+        <form method="GET" class="admin-filters">
+            <div class="filter-field"><label for="article-search">Search</label><input id="article-search" name="q" value="{{ request('q') }}" placeholder="Search articles" maxlength="200"></div>
+            <div class="filter-field"><label for="article-status">Status</label><select id="article-status" name="status">
                 <option value="">All statuses</option>
                 @foreach(['draft','review','scheduled','published','archived'] as $status)
                     <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                 @endforeach
-            </select>
+            </select></div>
+            <x-admin-period-filter :period="$period" />
             <button class="btn btn-primary"><i class="fa-solid fa-filter"></i> Filter</button>
+            <a class="btn btn-light" href="{{ route('admin.articles.index') }}">Reset</a>
         </form>
     </div>
 
