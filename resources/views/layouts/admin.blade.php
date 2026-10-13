@@ -195,6 +195,20 @@
 
         </nav>
 
+        <div class="sidebar-section">
+            Account
+        </div>
+
+        <nav class="sidebar-menu">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="sidebar-link sidebar-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Log out</span>
+                </button>
+            </form>
+        </nav>
+
     </aside>
 
 
@@ -223,29 +237,39 @@
             </div>
 
 
-            <div class="admin-user">
+            <div class="admin-topbar-actions">
+                <div class="admin-user">
 
-                <div class="admin-avatar">
+                    <div class="admin-avatar">
 
-                    {{
-                        strtoupper(
-                            substr(
-                                auth()->user()->name ?? 'A',
-                                0,
-                                1
+                        {{
+                            strtoupper(
+                                substr(
+                                    auth()->user()->name ?? 'A',
+                                    0,
+                                    1
+                                )
                             )
-                        )
-                    }}
+                        }}
+
+                    </div>
+
+
+                    <span class="admin-user-name">
+
+                        {{ auth()->user()->name ?? 'Administrator' }}
+
+                    </span>
 
                 </div>
 
-
-                <span class="admin-user-name">
-
-                    {{ auth()->user()->name ?? 'Administrator' }}
-
-                </span>
-
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="topbar-logout">
+                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                        <span>Log out</span>
+                    </button>
+                </form>
             </div>
 
         </header>
