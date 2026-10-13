@@ -43,15 +43,23 @@
 
 <nav class="nav" aria-label="Main navigation">
     <div class="container inner">
-        <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
-        <a href="{{ route('articles.index') }}" @if(request()->routeIs('articles.*')) aria-current="page" @endif>Articles</a>
-        @foreach($siteTopics as $topic)
-            <a href="{{ $topic['url'] }}"
-               @if((request()->routeIs('categories.show') && request()->route('slug') === $topic['slug']) || (request()->routeIs('articles.index') && request('category') === $topic['slug'])) aria-current="page" @endif>
-                {{ $topic['label'] }}
-            </a>
-        @endforeach
-        <a href="{{ route('events.index') }}" @if(request()->routeIs('events.*')) aria-current="page" @endif>Events</a>
-        <a href="{{ route('about') }}" @if(request()->routeIs('about')) aria-current="page" @endif>About</a>
+        <button class="nav-toggle" id="mainNavToggle" type="button" aria-controls="mainNavLinks" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <span class="nav-toggle-label">Menu</span>
+        </button>
+        <div class="nav-links" id="mainNavLinks">
+            <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>Home</a>
+            <a href="{{ route('articles.index') }}" @if(request()->routeIs('articles.*')) aria-current="page" @endif>Articles</a>
+            @foreach($siteTopics as $topic)
+                <a href="{{ $topic['url'] }}"
+                   @if((request()->routeIs('categories.show') && request()->route('slug') === $topic['slug']) || (request()->routeIs('articles.index') && request('category') === $topic['slug'])) aria-current="page" @endif>
+                    {{ $topic['label'] }}
+                </a>
+            @endforeach
+            <a href="{{ route('events.index') }}" @if(request()->routeIs('events.*')) aria-current="page" @endif>Events</a>
+            <a href="{{ route('about') }}" @if(request()->routeIs('about')) aria-current="page" @endif>About</a>
+        </div>
     </div>
 </nav>

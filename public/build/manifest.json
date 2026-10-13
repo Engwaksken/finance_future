@@ -27,7 +27,7 @@
     ]
   },
   "resources/css/frontend.css": {
-    "file": "assets/frontend-dM9E7jsn.css",
+    "file": "assets/frontend-CoBaEoZe.css",
     "src": "resources/css/frontend.css",
     "isEntry": true,
     "name": "frontend",
@@ -36,7 +36,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-CJSPZw6H.js",
+    "file": "assets/app-B11BRmgm.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
