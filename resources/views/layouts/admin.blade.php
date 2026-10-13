@@ -31,7 +31,8 @@
 <div class="app-shell">
 
     <aside class="sidebar"
-           id="adminSidebar">
+           id="adminSidebar"
+           aria-label="Admin navigation">
 
         <div class="sidebar-brand">
 
@@ -211,6 +212,7 @@
 
     </aside>
 
+    <button type="button" class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Close navigation menu" tabindex="-1"></button>
 
     <div class="main-area">
 
@@ -221,7 +223,9 @@
                 <button type="button"
                         class="mobile-menu-btn"
                         id="sidebarToggle"
-                        aria-label="Toggle sidebar">
+                        aria-label="Open navigation menu"
+                        aria-controls="adminSidebar"
+                        aria-expanded="false">
 
                     <i class="fa-solid fa-bars"></i>
 
@@ -341,6 +345,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const toggle =
         document.getElementById('sidebarToggle');
+    const backdrop =
+        document.getElementById('sidebarBackdrop');
+
+    const setSidebarOpen = function (isOpen) {
+        if (!sidebar || !toggle || !backdrop) return;
+
+        sidebar.classList.toggle('open', isOpen);
+        backdrop.classList.toggle('open', isOpen);
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+        document.body.classList.toggle('sidebar-open', isOpen);
+    };
 
 
     /*
@@ -349,17 +365,26 @@ document.addEventListener('DOMContentLoaded', function () {
     |--------------------------------------------------------------------------
     */
 
-    if (toggle && sidebar) {
+    if (toggle && sidebar && backdrop) {
+        toggle.addEventListener('click', function () {
+            setSidebarOpen(!sidebar.classList.contains('open'));
+        });
 
-        toggle.addEventListener(
-            'click',
-            function () {
+        backdrop.addEventListener('click', function () {
+            setSidebarOpen(false);
+        });
 
-                sidebar.classList.toggle('open');
+        sidebar.addEventListener('click', function (event) {
+            if (event.target.closest('a')) setSidebarOpen(false);
+        });
 
-            }
-        );
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') setSidebarOpen(false);
+        });
 
+        window.addEventListener('resize', function () {
+            if (window.innerWidth > 850) setSidebarOpen(false);
+        });
     }
 
 
