@@ -31,6 +31,25 @@ class ArticleSanitizationTest extends TestCase
         $this->assertStringNotContainsString('onerror', $article->fresh()->body);
     }
 
+    public function test_safe_article_links_are_saved_and_rendered_on_the_public_article_page(): void
+    {
+        $user = User::factory()->create(['role' => 'super_admin', 'status' => 'active']);
+
+        $this->actingAs($user)->post(route('admin.articles.store'), [
+            'title' => 'Article with a link',
+            'body' => '<p>Visit <a href="https://example.com">Example</a>.</p>',
+            'status' => 'published',
+        ])->assertSessionHasNoErrors();
+
+        $article = Article::where('slug', 'article-with-a-link')->firstOrFail();
+        $this->assertStringContainsString('<a href="https://example.com"', $article->body);
+
+        $this->get(route('articles.show', $article->slug))
+            ->assertOk()
+            ->assertSee('href="https://example.com"', false)
+            ->assertSee('>Example</a>', false);
+    }
+
     public function test_oversized_article_is_rejected_instead_of_truncated(): void
     {
         $user = User::factory()->create(['role' => 'super_admin', 'status' => 'active']);

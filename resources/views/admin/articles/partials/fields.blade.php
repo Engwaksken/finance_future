@@ -92,8 +92,8 @@
                 if (!button) return;
                 const textarea = button.closest('form').querySelector('textarea[name="body"]');
                 const urlInput = button.closest('form').querySelector('[data-link-url]');
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
+                const start = Number(textarea.dataset.linkSelectionStart ?? textarea.selectionStart);
+                const end = Number(textarea.dataset.linkSelectionEnd ?? textarea.selectionEnd);
                 const selected = textarea.value.slice(start, end) || 'link text';
                 const url = urlInput.value.trim();
                 if (!url) {
@@ -114,8 +114,21 @@
                 const escapedText = selected.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                 const link = `<a href="${escapedUrl}">${escapedText}</a>`;
                 textarea.setRangeText(link, start, end, 'select');
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                delete textarea.dataset.linkSelectionStart;
+                delete textarea.dataset.linkSelectionEnd;
                 urlInput.value = '';
                 textarea.focus();
+            });
+
+            document.querySelectorAll('textarea[name="body"]').forEach(function (textarea) {
+                const rememberSelection = function () {
+                    textarea.dataset.linkSelectionStart = textarea.selectionStart;
+                    textarea.dataset.linkSelectionEnd = textarea.selectionEnd;
+                };
+                ['select', 'keyup', 'mouseup', 'blur'].forEach(function (eventName) {
+                    textarea.addEventListener(eventName, rememberSelection);
+                });
             });
 
             document.querySelectorAll('[data-image-preview]').forEach(function (input) {
