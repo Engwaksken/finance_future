@@ -44,7 +44,7 @@
         @endif
         <input type="file" name="featured_image_file" accept="image/jpeg,image/png,image/webp,image/gif" data-image-preview>
         <small class="field-help">JPG, PNG, WebP or GIF; maximum 5 MB. Leave empty to keep the current image.</small>
-        <img alt="Selected image preview" data-preview-output hidden style="max-width:180px;max-height:120px;object-fit:cover;margin-top:.5rem">
+        <img alt="Selected image preview" data-preview-output hidden style="display:none;max-width:180px;max-height:120px;object-fit:cover;margin-top:.5rem">
     </div>
 
     <div class="field">
@@ -106,13 +106,23 @@
                 textarea.focus();
             });
 
-            document.addEventListener('change', function (event) {
-                if (!event.target.matches('[data-image-preview]')) return;
-                const preview = event.target.parentElement.querySelector('[data-preview-output]');
-                const file = event.target.files[0];
-                if (!file) { preview.hidden = true; return; }
-                preview.src = URL.createObjectURL(file);
-                preview.hidden = false;
+            document.querySelectorAll('[data-image-preview]').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    const preview = input.parentElement.querySelector('[data-preview-output]');
+                    const file = input.files && input.files[0];
+                    if (!preview) return;
+                    if (!file) {
+                        preview.hidden = true;
+                        preview.style.display = 'none';
+                        preview.removeAttribute('src');
+                        return;
+                    }
+                    if (preview.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
+                    preview.dataset.objectUrl = URL.createObjectURL(file);
+                    preview.src = preview.dataset.objectUrl;
+                    preview.hidden = false;
+                    preview.style.display = 'block';
+                });
             });
         </script>
     @endpush
