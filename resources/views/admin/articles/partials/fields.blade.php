@@ -30,12 +30,21 @@
 
     <div class="field field-full">
         <label>Article Body</label>
+        <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem">
+            <button class="btn btn-light" type="button" data-insert-link="body">Insert link</button>
+            <small class="field-help">Select text, then insert a link. Links can also be typed as HTML.</small>
+        </div>
         <textarea name="body" rows="12" required>{{ old('body',$article->body) }}</textarea>
     </div>
 
     <div class="field">
         <label>Featured Image</label>
-        <input type="file" name="featured_image_file" accept="image/*">
+        @if($article->featured_image)
+            <img src="{{ asset('storage/'.$article->featured_image) }}" alt="Current featured image" style="display:block;max-width:180px;max-height:120px;object-fit:cover;margin-bottom:.5rem">
+        @endif
+        <input type="file" name="featured_image_file" accept="image/jpeg,image/png,image/webp,image/gif" data-image-preview>
+        <small class="field-help">JPG, PNG, WebP or GIF; maximum 5 MB. Leave empty to keep the current image.</small>
+        <img alt="Selected image preview" data-preview-output hidden style="max-width:180px;max-height:120px;object-fit:cover;margin-top:.5rem">
     </div>
 
     <div class="field">
@@ -74,3 +83,37 @@
         <textarea name="seo_description" rows="3">{{ old('seo_description',$article->seo_description) }}</textarea>
     </div>
 </div>
+@once
+    @push('scripts')
+        <script>
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('[data-insert-link="body"]');
+                if (!button) return;
+                const textarea = button.closest('form').querySelector('textarea[name="body"]');
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const selected = textarea.value.slice(start, end) || 'link text';
+                const url = window.prompt('Enter the link URL (https://, mailto:, or tel:):', 'https://');
+                if (!url) return;
+                if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) {
+                    window.alert('Please use a valid https://, http://, mailto:, tel:, or relative link.');
+                    return;
+                }
+                const escapedUrl = url.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                const escapedText = selected.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                const link = `<a href="${escapedUrl}">${escapedText}</a>`;
+                textarea.setRangeText(link, start, end, 'select');
+                textarea.focus();
+            });
+
+            document.addEventListener('change', function (event) {
+                if (!event.target.matches('[data-image-preview]')) return;
+                const preview = event.target.parentElement.querySelector('[data-preview-output]');
+                const file = event.target.files[0];
+                if (!file) { preview.hidden = true; return; }
+                preview.src = URL.createObjectURL(file);
+                preview.hidden = false;
+            });
+        </script>
+    @endpush
+@endonce
