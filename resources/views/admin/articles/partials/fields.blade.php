@@ -34,7 +34,7 @@
             <input type="text" name="link_url" data-link-url placeholder="https://example.com" aria-label="Link URL">
             <button class="btn btn-light" type="button" data-insert-link="body">Insert link</button>
         </div>
-        <small class="field-help">Select text in the article body, enter a URL, then click Insert link.</small>
+        <small class="field-help">Select text and enter a URL to insert a link. YouTube URLs are inserted as video embeds.</small>
         <textarea name="body" rows="12" required>{{ old('body',$article->body) }}</textarea>
     </div>
 
@@ -112,8 +112,11 @@
                 urlInput.setCustomValidity('');
                 const escapedUrl = url.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                 const escapedText = selected.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-                const link = `<a href="${escapedUrl}">${escapedText}</a>`;
-                textarea.setRangeText(link, start, end, 'select');
+                const youtubeId = url.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?:[?&#].*)?$/i)?.[1];
+                const embed = youtubeId
+                    ? `<iframe src="https://www.youtube-nocookie.com/embed/${youtubeId}" title="YouTube video" width="560" height="315" allowfullscreen></iframe>`
+                    : `<a href="${escapedUrl}">${escapedText}</a>`;
+                textarea.setRangeText(embed, start, end, 'select');
                 textarea.dispatchEvent(new Event('input', { bubbles: true }));
                 delete textarea.dataset.linkSelectionStart;
                 delete textarea.dataset.linkSelectionEnd;

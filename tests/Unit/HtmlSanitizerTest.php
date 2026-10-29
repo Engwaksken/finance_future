@@ -39,4 +39,12 @@ class HtmlSanitizerTest extends TestCase
         $this->assertStringContainsString('rel="noopener noreferrer nofollow"', $clean);
         $this->assertStringContainsString('src="/storage/chart.png"', $clean);
     }
+
+    public function test_youtube_embeds_are_allowed_but_other_iframes_are_removed(): void
+    {
+        $clean = HtmlSanitizer::clean('<iframe src="https://www.youtube-nocookie.com/embed/abcdefghijk" title="Video"></iframe><iframe src="https://evil.example/embed/abcdefghijk"></iframe>');
+
+        $this->assertStringContainsString('youtube-nocookie.com/embed/abcdefghijk', $clean);
+        $this->assertStringNotContainsString('evil.example', $clean);
+    }
 }

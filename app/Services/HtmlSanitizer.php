@@ -32,6 +32,16 @@ final class HtmlSanitizer
             throw new \LengthException('Article body exceeds the 1,000,000-byte sanitization limit.');
         }
 
+        // Only permit the embed host used by the editor. Never allow arbitrary
+        // third-party frames in user-authored article content.
+        $html = preg_replace_callback('/<iframe\b([^>]*)>(.*?)<\/iframe\s*>/is', static function (array $match): string {
+            preg_match('/\bsrc\s*=\s*(["\'])(.*?)\1/i', $match[1], $src);
+
+            return isset($src[2]) && preg_match('~^https://www\.youtube-nocookie\.com/embed/[A-Za-z0-9_-]{11}$~D', html_entity_decode($src[2], ENT_QUOTES | ENT_HTML5))
+                ? $match[0]
+                : '';
+        }, $html) ?? $html;
+
         return self::sanitizer()->sanitize($html);
     }
 
@@ -73,6 +83,8 @@ final class HtmlSanitizer
             ->allowElement('hr')
             // Media.
             ->allowElement('img', ['src', 'alt', 'title', 'width', 'height'])
+            // Editors insert embeds only from YouTube URLs.
+            ->allowElement('iframe', ['src', 'title', 'width', 'height', 'allow', 'allowfullscreen'])
             ->allowElement('figure')
             ->allowElement('figcaption')
             // Tables.
