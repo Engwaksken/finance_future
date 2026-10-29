@@ -31,9 +31,10 @@
     <div class="field field-full">
         <label>Article Body</label>
         <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem">
+            <input type="text" name="link_url" data-link-url placeholder="https://example.com" aria-label="Link URL">
             <button class="btn btn-light" type="button" data-insert-link="body">Insert link</button>
-            <small class="field-help">Select text, then insert a link. Links can also be typed as HTML.</small>
         </div>
+        <small class="field-help">Select text in the article body, enter a URL, then click Insert link.</small>
         <textarea name="body" rows="12" required>{{ old('body',$article->body) }}</textarea>
     </div>
 
@@ -90,19 +91,30 @@
                 const button = event.target.closest('[data-insert-link="body"]');
                 if (!button) return;
                 const textarea = button.closest('form').querySelector('textarea[name="body"]');
+                const urlInput = button.closest('form').querySelector('[data-link-url]');
                 const start = textarea.selectionStart;
                 const end = textarea.selectionEnd;
                 const selected = textarea.value.slice(start, end) || 'link text';
-                const url = window.prompt('Enter the link URL (https://, mailto:, or tel:):', 'https://');
-                if (!url) return;
-                if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) {
-                    window.alert('Please use a valid https://, http://, mailto:, tel:, or relative link.');
+                const url = urlInput.value.trim();
+                if (!url) {
+                    urlInput.focus();
+                    urlInput.setCustomValidity('Enter a URL for the link.');
+                    urlInput.reportValidity();
+                    urlInput.addEventListener('input', () => urlInput.setCustomValidity(''), { once: true });
                     return;
                 }
+                if (!/^(https?:\/\/|mailto:|tel:|\/|#)/i.test(url)) {
+                    urlInput.setCustomValidity('Use an http(s), mailto, tel, or relative URL.');
+                    urlInput.reportValidity();
+                    urlInput.addEventListener('input', () => urlInput.setCustomValidity(''), { once: true });
+                    return;
+                }
+                urlInput.setCustomValidity('');
                 const escapedUrl = url.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                 const escapedText = selected.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                 const link = `<a href="${escapedUrl}">${escapedText}</a>`;
                 textarea.setRangeText(link, start, end, 'select');
+                urlInput.value = '';
                 textarea.focus();
             });
 
