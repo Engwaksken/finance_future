@@ -32,14 +32,19 @@ final class HtmlSanitizer
             throw new \LengthException('Article body exceeds the 1,000,000-byte sanitization limit.');
         }
 
-        // Only permit the embed host used by the editor. Never allow arbitrary
-        // third-party frames in user-authored article content.
+        // Only permit known video embed URLs used by the editor. Never allow
+        // arbitrary third-party frames in user-authored article content.
         $html = preg_replace_callback('/<iframe\b([^>]*)>(.*?)<\/iframe\s*>/is', static function (array $match): string {
             preg_match('/\bsrc\s*=\s*(["\'])(.*?)\1/i', $match[1], $src);
+            $url = isset($src[2]) ? html_entity_decode($src[2], ENT_QUOTES | ENT_HTML5) : '';
+            $allowed = preg_match('~^https://www\.youtube-nocookie\.com/embed/[A-Za-z0-9_-]{11}$~D', $url)
+                || preg_match('~^https://player\.vimeo\.com/video/\d+$~D', $url)
+                || preg_match('~^https://www\.tiktok\.com/player/v1/\d+$~D', $url)
+                || preg_match('~^https://www\.instagram\.com/p/[\w-]+/embed$~D', $url)
+                || preg_match('~^https://www\.facebook\.com/plugins/video\.php\?href=https%3A%2F%2Fwww\.facebook\.com%2Fwatch%2F%3Fv%3D\d+&show_text=0$~D', $url)
+                || preg_match('~^https://open\.spotify\.com/embed/(?:track|album|playlist|episode|show)/[A-Za-z0-9]+$~D', $url);
 
-            return isset($src[2]) && preg_match('~^https://www\.youtube-nocookie\.com/embed/[A-Za-z0-9_-]{11}$~D', html_entity_decode($src[2], ENT_QUOTES | ENT_HTML5))
-                ? $match[0]
-                : '';
+            return $allowed ? $match[0] : '';
         }, $html) ?? $html;
 
         return self::sanitizer()->sanitize($html);

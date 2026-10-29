@@ -34,7 +34,7 @@
             <input type="text" name="link_url" data-link-url placeholder="https://example.com" aria-label="Link URL">
             <button class="btn btn-light" type="button" data-insert-link="body">Insert link</button>
         </div>
-        <small class="field-help">Select text and enter a URL to insert a link. YouTube URLs are inserted as video embeds.</small>
+        <small class="field-help">Select text and enter a URL to insert a link. YouTube, Vimeo, TikTok, Facebook, Instagram, and Spotify URLs are embedded.</small>
         <textarea name="body" rows="12" required>{{ old('body',$article->body) }}</textarea>
     </div>
 
@@ -112,9 +112,21 @@
                 urlInput.setCustomValidity('');
                 const escapedUrl = url.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
                 const escapedText = selected.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-                const youtubeId = url.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?:[?&#].*)?$/i)?.[1];
-                const embed = youtubeId
-                    ? `<iframe src="https://www.youtube-nocookie.com/embed/${youtubeId}" title="YouTube video" width="560" height="315" allowfullscreen></iframe>`
+                const video = url.match(/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})(?:[?&#].*)?$/i);
+                const vimeo = url.match(/^https?:\/\/(?:www\.)?vimeo\.com\/(?:video\/)?(\d+)(?:[?/#].*)?$/i);
+                const tiktok = url.match(/^https?:\/\/(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/(\d+)(?:[?/#].*)?$/i);
+                const instagram = url.match(/^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/([\w-]+)\/?(?:[?].*)?$/i);
+                const facebook = url.match(/^https?:\/\/(?:www\.)?facebook\.com\/(?:watch\/\?v=|.+\/videos\/)(\d+)(?:[?&#/].*)?$/i);
+                const spotify = url.match(/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(track|album|playlist|episode|show)\/([A-Za-z0-9]+)(?:[?].*)?$/i);
+                const embedUrl = video ? `https://www.youtube-nocookie.com/embed/${video[1]}`
+                    : vimeo ? `https://player.vimeo.com/video/${vimeo[1]}`
+                    : tiktok ? `https://www.tiktok.com/player/v1/${tiktok[1]}`
+                    : instagram ? `https://www.instagram.com/p/${instagram[1]}/embed`
+                    : facebook ? `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(`https://www.facebook.com/watch/?v=${facebook[1]}`)}&show_text=0`
+                    : spotify ? `https://open.spotify.com/embed/${spotify[1].toLowerCase()}/${spotify[2]}`
+                    : null;
+                const embed = embedUrl
+                    ? `<iframe src="${embedUrl}" title="Embedded video" width="560" height="315" loading="lazy" allowfullscreen></iframe>`
                     : `<a href="${escapedUrl}">${escapedText}</a>`;
                 textarea.setRangeText(embed, start, end, 'select');
                 textarea.dispatchEvent(new Event('input', { bubbles: true }));

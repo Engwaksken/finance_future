@@ -40,11 +40,23 @@ class HtmlSanitizerTest extends TestCase
         $this->assertStringContainsString('src="/storage/chart.png"', $clean);
     }
 
-    public function test_youtube_embeds_are_allowed_but_other_iframes_are_removed(): void
+    public function test_supported_video_embeds_are_allowed_but_other_iframes_are_removed(): void
     {
-        $clean = HtmlSanitizer::clean('<iframe src="https://www.youtube-nocookie.com/embed/abcdefghijk" title="Video"></iframe><iframe src="https://evil.example/embed/abcdefghijk"></iframe>');
+        $embeds = [
+            'https://www.youtube-nocookie.com/embed/abcdefghijk',
+            'https://player.vimeo.com/video/12345',
+            'https://www.tiktok.com/player/v1/1234567890123456789',
+            'https://www.instagram.com/p/ABC_123/embed',
+            'https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2Fwatch%2F%3Fv%3D123&show_text=0',
+            'https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC',
+        ];
+        $html = implode('', array_map(fn (string $src) => '<iframe src="'.$src.'" title="Video"></iframe>', $embeds));
+        $html .= '<iframe src="https://evil.example/embed/abcdefghijk"></iframe>';
+        $clean = HtmlSanitizer::clean($html);
 
-        $this->assertStringContainsString('youtube-nocookie.com/embed/abcdefghijk', $clean);
+        foreach ($embeds as $src) {
+            $this->assertStringContainsString(explode('?', $src)[0], $clean);
+        }
         $this->assertStringNotContainsString('evil.example', $clean);
     }
 }
