@@ -32,19 +32,17 @@ final class HtmlSanitizer
             throw new \LengthException('Article body exceeds the 1,000,000-byte sanitization limit.');
         }
 
-        // Only permit known video embed URLs used by the editor. Never allow
-        // arbitrary third-party frames in user-authored article content.
+        // Turn links to supported media platforms into embedded players.
+        $html = MediaEmbed::convert($html);
+
+        // Iframes: rebuild known embeds from their canonical URL (so platform
+        // share/watch URLs inside an iframe still play) and drop everything
+        // else. Never allow arbitrary third-party frames in article content.
         $html = preg_replace_callback('/<iframe\b([^>]*)>(.*?)<\/iframe\s*>/is', static function (array $match): string {
             preg_match('/\bsrc\s*=\s*(["\'])(.*?)\1/i', $match[1], $src);
-            $url = isset($src[2]) ? html_entity_decode($src[2], ENT_QUOTES | ENT_HTML5) : '';
-            $allowed = preg_match('~^https://www\.youtube-nocookie\.com/embed/[A-Za-z0-9_-]{11}$~D', $url)
-                || preg_match('~^https://player\.vimeo\.com/video/\d+$~D', $url)
-                || preg_match('~^https://www\.tiktok\.com/player/v1/\d+$~D', $url)
-                || preg_match('~^https://www\.instagram\.com/p/[\w-]+/embed$~D', $url)
-                || preg_match('~^https://www\.facebook\.com/plugins/video\.php\?href=https%3A%2F%2Fwww\.facebook\.com%2Fwatch%2F%3Fv%3D\d+&show_text=0$~D', $url)
-                || preg_match('~^https://open\.spotify\.com/embed/(?:track|album|playlist|episode|show)/[A-Za-z0-9]+$~D', $url);
+            $embedUrl = isset($src[2]) ? MediaEmbed::embedUrl($src[2]) : null;
 
-            return $allowed ? $match[0] : '';
+            return $embedUrl ? MediaEmbed::iframe($embedUrl) : '';
         }, $html) ?? $html;
 
         return self::sanitizer()->sanitize($html);
@@ -88,7 +86,7 @@ final class HtmlSanitizer
             ->allowElement('hr')
             // Media.
             ->allowElement('img', ['src', 'alt', 'title', 'width', 'height'])
-            // Editors insert embeds only from YouTube URLs.
+            // Only canonical embeds built by MediaEmbed reach this point.
             ->allowElement('iframe', ['src', 'title', 'width', 'height', 'allow', 'allowfullscreen'])
             ->allowElement('figure')
             ->allowElement('figcaption')
