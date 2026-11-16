@@ -9,7 +9,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-DFsVZVfZ.css",
+    "file": "assets/app-D6uAe97Y.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -26,8 +26,26 @@
       "auth.css"
     ]
   },
+  "resources/css/builder-canvas.css": {
+    "file": "assets/builder-canvas-DDPr6Ns4.css",
+    "src": "resources/css/builder-canvas.css",
+    "isEntry": true,
+    "name": "builder-canvas",
+    "names": [
+      "builder-canvas.css"
+    ]
+  },
+  "resources/css/builder.css": {
+    "file": "assets/builder-e1TMvy-M.css",
+    "src": "resources/css/builder.css",
+    "isEntry": true,
+    "name": "builder",
+    "names": [
+      "builder.css"
+    ]
+  },
   "resources/css/frontend.css": {
-    "file": "assets/frontend-CoBaEoZe.css",
+    "file": "assets/frontend-VwJEYvtv.css",
     "src": "resources/css/frontend.css",
     "isEntry": true,
     "name": "frontend",
@@ -36,9 +54,24 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-B11BRmgm.js",
+    "file": "assets/app-BknOsAQ7.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/builder-frontend.js"
+    ]
+  },
+  "resources/js/builder-frontend.js": {
+    "file": "assets/builder-frontend-BnCDIqT9.js",
+    "name": "builder-frontend",
+    "src": "resources/js/builder-frontend.js",
+    "isEntry": true
+  },
+  "resources/js/builder/editor.js": {
+    "file": "assets/editor-DZMyHzVS.js",
+    "name": "editor",
+    "src": "resources/js/builder/editor.js",
     "isEntry": true
   }
 }

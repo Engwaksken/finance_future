@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Article;
 use App\Services\HtmlSanitizer;
+use App\Services\PageBuilder\PageBuilder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -21,14 +22,19 @@ class ResanitizeArticles extends Command
         $skipped = 0;
 
         Article::withTrashed()
-            ->select(['id', 'title', 'body'])
+            ->select(['id', 'title', 'slug', 'body', 'layout', 'layout_css'])
             ->orderBy('id')
             ->chunkById(200, function ($articles) use ($dryRun, &$scanned, &$changed, &$skipped) {
                 foreach ($articles as $article) {
                     $scanned++;
 
                     try {
-                        $clean = HtmlSanitizer::clean($article->body);
+                        // Builder articles are re-rendered from their (re-validated) layout;
+                        // sanitizing the rendered HTML would strip the builder's markup.
+                        $built = $article->usesBuilder()
+                            ? PageBuilder::build($article->layout, PageBuilder::context($article))
+                            : null;
+                        $clean = $built['html'] ?? HtmlSanitizer::clean($article->body);
                     } catch (\LengthException $exception) {
                         $skipped++;
                         $this->error("Skipped article #{$article->id}: {$exception->getMessage()}");
@@ -36,7 +42,7 @@ class ResanitizeArticles extends Command
                         continue;
                     }
 
-                    if ($clean === $article->body) {
+                    if ($clean === $article->body && ($built === null || $built['css'] === $article->layout_css)) {
                         continue;
                     }
 
@@ -50,7 +56,11 @@ class ResanitizeArticles extends Command
                         // included (the query builder has no soft-delete scope).
                         DB::table('articles')
                             ->where('id', $article->id)
-                            ->update(['body' => $clean]);
+                            ->update($built === null ? ['body' => $clean] : [
+                                'body' => $clean,
+                                'layout' => json_encode($built['layout']),
+                                'layout_css' => $built['css'],
+                            ]);
                     }
                 }
             });

@@ -12,6 +12,7 @@ class Article extends Model
 
     protected $fillable = [
         'author_id', 'category_id', 'title', 'slug', 'excerpt', 'body',
+        'layout', 'layout_css', 'page_template',
         'featured_image', 'status', 'is_featured', 'is_trending', 'reading_time',
         'published_at', 'scheduled_for', 'seo_title', 'seo_description',
         'social_image', 'views_count',
@@ -22,7 +23,27 @@ class Article extends Model
         'is_trending' => 'boolean',
         'published_at' => 'datetime',
         'scheduled_for' => 'datetime',
+        'layout' => 'array',
     ];
+
+    public const STATUSES = ['draft', 'review', 'scheduled', 'published', 'archived'];
+
+    public const PAGE_TEMPLATES = [
+        'default' => 'Article (title, meta and featured image)',
+        'wide' => 'Wide article (1180px content)',
+        'canvas' => 'Canvas (builder content only, full width)',
+    ];
+
+    /** Whether the body was built with the visual builder. */
+    public function usesBuilder(): bool
+    {
+        return is_array($this->layout);
+    }
+
+    public function revisions()
+    {
+        return $this->hasMany(ArticleRevision::class)->latest('id');
+    }
 
     public function author()
     {
