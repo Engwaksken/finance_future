@@ -16,7 +16,7 @@ class AuditSnapshot
     public function model(Model $model): array
     {
         $fields = match (true) {
-            $model instanceof Article => ['title', 'slug', 'author_id', 'category_id', 'status', 'is_featured', 'is_trending', 'published_at', 'scheduled_for', 'featured_image', 'body', 'excerpt', 'seo_title', 'seo_description'],
+            $model instanceof Article => ['title', 'slug', 'author_id', 'category_id', 'status', 'is_featured', 'is_trending', 'published_at', 'scheduled_for', 'featured_image', 'body', 'layout', 'page_template', 'excerpt', 'seo_title', 'seo_description'],
             $model instanceof User => ['name', 'email', 'role', 'status', 'password'],
             $model instanceof Category => ['name', 'slug', 'description', 'display_type', 'icon', 'featured_image', 'display_number', 'sort_order', 'is_active', 'is_featured'],
             $model instanceof Role => ['name', 'slug', 'description'],
@@ -58,7 +58,7 @@ class AuditSnapshot
                 continue;
             }
             // Record that credentials/content changed without retaining their values.
-            if (in_array($field, ['password', 'body'], true)) {
+            if (in_array($field, ['password', 'body', 'layout'], true)) {
                 $changes[$field] = ['redacted' => true];
             } else {
                 $changes[$field] = [

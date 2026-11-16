@@ -1,6 +1,7 @@
 import './bootstrap';
 import './password-toggle';
 import './page-slides';
+import './builder-frontend';
 
 import Alpine from 'alpinejs';
 

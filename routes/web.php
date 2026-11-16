@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\BuilderController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\PageSlideController;
@@ -35,7 +36,27 @@ Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))
 Route::middleware(['auth', 'admin', 'audit'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->middleware('permission:dashboard.view')->name('dashboard');
 
-    Route::resource('articles', AdminArticleController::class)->only(['index', 'edit', 'store', 'update', 'destroy'])->middleware('permission:articles.manage');
+    Route::middleware('permission:articles.manage')->group(function () {
+        Route::post('/articles/preview', [AdminArticleController::class, 'preview'])->name('articles.preview');
+        Route::post('/articles/bulk', [AdminArticleController::class, 'bulk'])->name('articles.bulk');
+        Route::post('/articles/{article}/duplicate', [AdminArticleController::class, 'duplicate'])->name('articles.duplicate');
+        Route::get('/articles/{article}/revisions', [AdminArticleController::class, 'revisions'])->name('articles.revisions');
+        Route::get('/articles/{article}/revisions/{revision}', [AdminArticleController::class, 'revision'])->name('articles.revisions.show');
+        Route::patch('/articles/trash/{article}/restore', [AdminArticleController::class, 'restore'])->whereNumber('article')->name('articles.restore');
+        Route::delete('/articles/trash/{article}', [AdminArticleController::class, 'forceDestroy'])->whereNumber('article')->name('articles.force-destroy');
+        Route::resource('articles', AdminArticleController::class)->only(['index', 'create', 'edit', 'store', 'update', 'destroy']);
+
+        Route::prefix('builder')->name('builder.')->controller(BuilderController::class)->group(function () {
+            Route::get('/canvas', 'canvas')->name('canvas');
+            Route::post('/render', 'render')->name('render');
+            Route::get('/media', 'media')->name('media.index');
+            Route::post('/media', 'upload')->name('media.store');
+            Route::get('/templates', 'templates')->name('templates.index');
+            Route::post('/templates', 'storeTemplate')->name('templates.store');
+            Route::get('/templates/{template}', 'template')->name('templates.show');
+            Route::delete('/templates/{template}', 'destroyTemplate')->name('templates.destroy');
+        });
+    });
     Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('permission:categories.manage');
     Route::resource('users', AdminUserController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('permission:users.manage');
     Route::resource('roles', AdminRoleController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('permission:roles.manage');

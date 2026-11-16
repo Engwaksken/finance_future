@@ -1,3 +1,4 @@
+@import './builder-content.css';
 :root{--ink:#101820;--muted:#667085;--line:#e7e9ec;--soft:#f7f8fa;--brand:#0b3b60;--accent:#b99146;--white:#fff}
 .category-visual{display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--accent);font-weight:800}
 .site-logo{display:block;max-width:240px;max-height:70px;object-fit:contain;margin-bottom:8px}
